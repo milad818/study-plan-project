@@ -3,6 +3,7 @@ import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
 import { Container, Row, Button } from 'react-bootstrap';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import CusNavBar from './Components/CusNavBar';
 import CourseList from './Components/Courses/CourseList';
 import Program from './Components/StudyPlan/Program';
@@ -140,11 +141,11 @@ function App() {
     //if(validation(plan, course, type)) {
     if (checkValidCredit(plan, type)) {    //replace condition with the main validation func
       setNewPlan(plan);
-      setValidCredit(true)
+      // setValidCredit(true)
     } else {
       window.alert("The number of selected credits exceeds!")
       return;
-      setValidCredit(false);
+      // setValidCredit(false);
     }
 
     setNewSelectedCredits(c);
@@ -178,7 +179,11 @@ function App() {
     setNewSelectedCredits(selectedCredits);
   }
 
-
+  // const compHandler = (fc, np) => {
+  //   if(checkSame(fc, np)) {
+  //     setCompatibility(false);
+  //   }
+  // }
 
 
   return (

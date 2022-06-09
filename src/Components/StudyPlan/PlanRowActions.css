@@ -1,0 +1,11 @@
+.action {
+  cursor: pointer;
+  padding: 1px;
+  margin: 1px;
+  font-size: 18px;
+}
+.action:hover {
+  border: 1px solid #aaa;
+  font-size: 20px;
+}
+

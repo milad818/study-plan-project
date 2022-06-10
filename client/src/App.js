@@ -2,13 +2,13 @@
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
-import { Container, Row, Button } from 'react-bootstrap';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import CusNavBar from './Components/CusNavBar';
-import CourseList from './Components/Courses/CourseList';
-import Program from './Components/StudyPlan/Program';
-import Plan from './Components/StudyPlan/Plan';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Container, Row, Form } from 'react-bootstrap';
 import fakeCourses from './dao';
+import CusNavBar from './Components/CusNavBar';
+import CusContent from './Components/MainPage';
+import DefaultRoute from './DefaultRoute';
+import LoginForm from './loginForm';
 
 
 function App() {
@@ -22,10 +22,12 @@ function App() {
   const [saveValid, setSaveValid] = useState(false);
   const [newSelectedCredits, setNewSelectedCredits] = useState();
   const [selectedCredits, setSelectedCredits] = useState();
+  const [loggedIn, setLoggedIn] = useState(false);
 
 
 
-  let sortedCourses = fakeCourses.sort((a,b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
+
+  let sortedCourses = fakeCourses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
 
   // VALIDATION <----
 
@@ -73,10 +75,10 @@ function App() {
 
   const checkSameCode = (course, np) => {
     let i = 0;
-      for(i in np) {
-        if(course.code===np[i].code)
+    for (i in np) {
+      if (course.code === np[i].code)
         return true;
-      }
+    }
     return false;
   }
 
@@ -86,10 +88,10 @@ function App() {
     let i = 0;
     let j = 0;
     let k = 0;
-    for(i in c) {
-      for(j in np) {
-        for(k in np.incomps)
-          if(c[i].code===np[j].incomps[k])
+    for (i in c) {
+      for (j in np) {
+        for (k in np.incomps)
+          if (c[i].code === np[j].incomps[k])
             return false;
       }
     };
@@ -100,14 +102,14 @@ function App() {
 
   const validation = (plan, course, type) => {
     const valPlanCopy = [...plan];
-    if(!checkValidCredit(valPlanCopy, type)) {
+    if (!checkValidCredit(valPlanCopy, type)) {
       window.alert("The number of selected credits exceeds!");
       return false;
     }
-    if(checkSameCode(course, valPlanCopy)) {
+    if (checkSameCode(course, valPlanCopy)) {
       return false;
     }
-    if(!checkComp(course, valPlanCopy)) {
+    if (!checkComp(course, valPlanCopy)) {
       return false;
     }
     return true;
@@ -124,7 +126,7 @@ function App() {
     setNewPlan(() => np);
     let i = 0;
     let c = 0;
-    for(i in np) {
+    for (i in np) {
       c += np[i].credits;
     };
     setNewSelectedCredits(c);
@@ -164,7 +166,7 @@ function App() {
 
   const onSave = (plan, type) => {
     setPlan([...newPlan]);
-    console.log("in onsave new plan",plan)
+    console.log("in onsave new plan", plan)
     if (checkCanSave(plan, type)) {
       setSaveValid(true);
     } else {
@@ -179,29 +181,52 @@ function App() {
     setNewSelectedCredits(selectedCredits);
   }
 
-  // const compHandler = (fc, np) => {
-  //   if(checkSame(fc, np)) {
-  //     setCompatibility(false);
+  // const handleLogin = async (credentials) => {
+  //   try {
+  //     const user = await API.logIn(credentials);
+  //     setLoggedIn(true);
+  //     setMessage({msg: `Welcome, ${user.name}!`, type: 'success'});
+  //   }catch(err) {
+  //     console.log(err);
+  //     setMessage({msg: err, type: 'danger'});
   //   }
-  // }
+  // };
+
+  // const handleLogout = async () => {
+  //   await API.logOut();
+  //   setLoggedIn(false);
+  //   // clean up everything
+  //   setExams([]);
+  //   setMessage('');
+  // };
+
+
 
 
   return (
-
-    <Container className="app">
+    <Container>
       <Row className='nav-bar'>
         <CusNavBar />
       </Row>
-      <Row style={{ marginTop: '2rem' }}>
-        <CourseList courses={sortedCourses} newPlan={newPlan} addCourse={addCourse} editMode={editMode}
-        validCredit={validCredit} ></CourseList>
-      </Row>
-      <Row>
-        {createPlan ? <Plan newPlan={newPlan} progType={type} deleteCourse={deleteCourse} editMode={editMode} selectedCredits={newSelectedCredits}
-          onEdit={onEdit} setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} ></Plan> :
-          <Program initPlan={initPlan} ></Program>}
-      </Row>
+      <Router>
+        <Routes>
+          <Route path='/login' element={ <LoginForm/> } />
+          <Route path='/my-portal'
+            element={<CusContent courses={sortedCourses} newPlan={newPlan} addCourse={addCourse} editMode={editMode} loggedIn={true}
+              progType={type} deleteCourse={deleteCourse} newSelectedCredits={newSelectedCredits} onEdit={onEdit} createPlan={createPlan}
+              setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} initPlan={initPlan} validCredit={validCredit} />}>
+          </Route>
+          <Route path='/home-page'
+            element={<CusContent courses={sortedCourses} newPlan={newPlan} addCourse={addCourse} editMode={editMode} loggedIn={false}
+              progType={type} deleteCourse={deleteCourse} newSelectedCredits={newSelectedCredits} onEdit={onEdit} createPlan={createPlan}
+              setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} initPlan={initPlan} validCredit={validCredit} />}>
+          </Route>
+          <Route path='*' element={ <DefaultRoute/> } />
+        </Routes>
+
+      </Router>
     </Container>
+
   );
 }
 

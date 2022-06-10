@@ -24,8 +24,8 @@ function Plan(props) {
             <th>Code</th>
             <th>Course Name</th>
             <th>Credits</th>
-            <th>Max. Attendees</th>
             <th>No. Attendees</th>
+            <th>Max. Attendees</th>
             <th>Action</th>
           </tr>
         </thead>

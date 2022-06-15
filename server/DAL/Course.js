@@ -10,4 +10,4 @@ function Course(code, courseName, credits, maxStudents, incomps, preps) {
 }
 
 
-export default Course;
+module.exports = Course;

@@ -37,7 +37,7 @@ function Plan(props) {
       </Table></Row>
       <h2 style={{fontSize:"small", float: "center"}} >Selected Credits: {props.selectedCredits}</h2>
       {props.editMode ? <><Button variant="primary" type="button" onClick={(e) => {saveHandler(e)}} 
-      /*disabled={props.saveValid ? true : false}*/  >Save</Button> &nbsp;
+      /*disabled={props.saveValid ? false : true}*/  >Save</Button> &nbsp;
       <Button variant="secondary" type="button" onClick={() => {props.setEditMode(false); props.cancelHandler()}}>Cancel</Button></> :
       <Button variant="primary" type="button" style={{ marginLeft: "auto" }} onClick={() => props.onEdit()} >Edit</Button>
       }

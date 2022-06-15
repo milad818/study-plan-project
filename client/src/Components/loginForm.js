@@ -1,16 +1,22 @@
-import './App.css';
+import '../App.css';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 
 function LoginForm(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const handleSubmit =async (event) => {
     event.preventDefault();
     const credentials = { username, password };
 
-    props.login(credentials);
+    if(await props.login(credentials)) {
+
+      navigate('/my-portal');
+    }
   };
 
   return (

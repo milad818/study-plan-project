@@ -1,7 +1,7 @@
 const getAllCoursesBAL = require("../BAL/getAllCourses.bal");
 
 
-function getAllCoursesAPI() {
+function getAllCoursesAPI(app) {
   app.get("/api/courses", (req, res) => {
     getAllCoursesBAL()
       .then((result) => {

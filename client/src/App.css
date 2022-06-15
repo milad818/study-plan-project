@@ -2,10 +2,14 @@
   color: white;
 }
 
-.login-form {
-
-
-
+.fixed-alert {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
 }
 
 .login-container1 {
@@ -17,17 +21,17 @@
   position: relative;
   border-radius: 25px;
   margin-top: 10vh;
-  height: 70vh;
+  height: 60vh;
   width: 70vh;
 }
 
 .login-container2 {
-
+  margin-bottom: 10vh;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 10vh;
-  height: 70vh;
+  height: 60vh;
   z-index: 5;
 
 }

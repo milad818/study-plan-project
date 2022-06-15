@@ -16,8 +16,9 @@ function CusContent(props) {
       </Row>
       {props.loggedIn ? 
       <Row>
-        {props.createPlan ? <Plan newPlan={props.newPlan} progType={props.progType} deleteCourse={props.deleteCourse} editMode={props.editMode}
-        selectedCredits={props.newSelectedCredits} onEdit={props.onEdit} setEditMode={props.setEditMode} saveValid={props.saveValid} onSave={props.onSave}
+        {props.createPlan ? <Plan userplan={props.userplan} loggedIn={props.loggedIn} newPlan={props.newPlan} progType={props.progType}
+        deleteCourse={props.deleteCourse} editMode={props.editMode} selectedCredits={props.newSelectedCredits} onEdit={props.onEdit} setEditMode={props.setEditMode}
+        saveValid={props.saveValid} onSave={props.onSave}
         cancelHandler={props.cancelHandler} ></Plan> :
           <Program initPlan={props.initPlan} ></Program>}
       </Row> : ""}

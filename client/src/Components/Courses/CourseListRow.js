@@ -35,8 +35,8 @@ function CourseListRow(props) {
               </div>
             </Accordion.Header>
             <Accordion.Body>
-              {props.course.incomps ? <div>Incompatible with {props.course.incomps.join(', ')} &nbsp;&nbsp;</div> : <div>There are no incompatibilities!&nbsp;&nbsp;</div>}
-              {props.course.preps ? <div>Preparatory Courses: {props.course.preps.join(', ')} &nbsp;&nbsp;</div> : <div>There are no preparatory courses!&nbsp;&nbsp;</div>}
+              {props.course.incomps ? <div>Incompatible with {props.course.incomps.join(", ")} &nbsp;&nbsp;</div> : <div>There are no incompatibilities!&nbsp;&nbsp;</div>}
+              {props.course.preps ? <div>Preparatory Courses: {props.course.preps.join(", ")} &nbsp;&nbsp;</div> : <div>There are no preparatory courses!&nbsp;&nbsp;</div>}
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>

@@ -1,7 +1,9 @@
 const deletePlanBAL = require("../BAL/deletePlan.bal");
+const isLoggedIn = require("../isLoggedIn");
+
 
 function deletePlanAPI(app) {
-  app.delete("/api/plans/:id", (req, res) => {
+  app.delete("/api/plans/:id", isLoggedIn, (req, res) => {
     let id = req.params.id;
     deletePlanBAL(id)
     .then((result) => {
@@ -12,5 +14,6 @@ function deletePlanAPI(app) {
       });
   });
 }
+
 
 module.exports = deletePlanAPI;

@@ -1,7 +1,9 @@
 const dbfuncs = require("../DAL/dbFuncs");
 
+
 function postPlanBAL(plan) {
   return new Promise((resolve, reject) => {
+    console.log(plan);
     try {
       const db = new dbfuncs();
       db.postPlan(plan)

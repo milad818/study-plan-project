@@ -5,18 +5,19 @@ import PlanRow from "./PlanRow";
 function Plan(props) {
   
   function saveHandler() {
-    props.setEditMode(false);
     props.onSave(props.newPlan, props.progType)
-    console.log("in plan new plan", props.newPlan)
-    
+    // props.setEditMode(false);
+    // console.log("in plan new plan", props.newPlan)
   }
-  
+
+
+
   
   return (
     <Container style={{marginTop:'2rem'}}>
       <Row xs="auto" >
         <Col><h1 style={{fontSize:'medium'}}>My Study Plan ({props.progType})</h1></Col>
-        <Col><Button variant="link" size="sm" >(Discard Plan)</Button></Col>
+        <Col><Button variant="link" size="sm" onClick={() => {props.removePlanHandler()}} >(Remove Plan)</Button></Col>
       </Row>
       <Row><Table striped bordered hover>
         <thead>

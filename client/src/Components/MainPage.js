@@ -16,11 +16,11 @@ function CusContent(props) {
       </Row>
       {props.loggedIn ? 
       <Row>
-        {props.createPlan ? <Plan userplan={props.userplan} loggedIn={props.loggedIn} newPlan={props.newPlan} progType={props.progType}
-        deleteCourse={props.deleteCourse} editMode={props.editMode} selectedCredits={props.newSelectedCredits} onEdit={props.onEdit} setEditMode={props.setEditMode}
+        {props.createPlan ? <Plan userplan={props.userplan} loggedIn={props.loggedIn} fetchedPlan={props.fetchedPlan} newPlan={props.newPlan} progType={props.progType}
+        plan={props.plan} deleteCourse={props.deleteCourse} editMode={props.editMode} selectedCredits={props.newSelectedCredits} onEdit={props.onEdit} setEditMode={props.setEditMode}
         saveValid={props.saveValid} onSave={props.onSave}
-        cancelHandler={props.cancelHandler} ></Plan> :
-          <Program initPlan={props.initPlan} ></Program>}
+        cancelHandler={props.cancelHandler} removePlanHandler={props.removePlanHandler} ></Plan> :
+          <Program initPlan={props.initPlan} postPlanHandler={props.postPlanHandler}></Program>}
       </Row> : ""}
     </Container>
 

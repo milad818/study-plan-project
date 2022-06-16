@@ -67,6 +67,9 @@ const deleteRegistryAPI = require("./API/deleteRegistry.api");
 const getRegistryInfoAPI = require("./API/getRegistryInfo.api");
 const getAllCoursesAPI = require("./API/getAllCourses.api");
 const getUserInfoAPI = require("./API/getUserInfo.api");
+const deleteRegistryInfoAPI = require("./API/deleteRegistryInfo.api")
+const postNewRegistryAPI = require("./API/postNewRegistry.api");
+const logoutAPI = require('./API/logout.api');
 
 
 
@@ -91,7 +94,11 @@ deleteRegistryAPI(app);
 getRegistryInfoAPI(app);
 getAllCoursesAPI(app);
 getUserInfoAPI(app);
+deleteRegistryInfoAPI(app);
+postNewRegistryAPI(app);
 
+
+logoutAPI(app);
 
 
 /*****************************************/

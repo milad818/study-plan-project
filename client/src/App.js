@@ -18,11 +18,12 @@ let Courses = [];
 
 function App() {
 
+  const [plan, setPlan] = useState([]);
   const [newPlan, setNewPlan] = useState([]);
+  const [fetchedPlan, setFetchedPlan] = useState([]);
   const [createPlan, setCreatePlan] = useState(false);
   const [type, setType] = useState();
   const [editMode, setEditMode] = useState(false);
-  const [plan, setPlan] = useState([]);
   const [validCredit, setValidCredit] = useState(true);
   const [saveValid, setSaveValid] = useState();
   const [newSelectedCredits, setNewSelectedCredits] = useState();
@@ -36,7 +37,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => { console.log(data);
+    fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => {
     Courses = data.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.incompatible, x.prepcourse));
     let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
     setCourseList(sortedCourses);
@@ -69,7 +70,8 @@ function App() {
     // console.log(c);
     return true;
   };
-  console.log(checkCanSave(newPlan, type));
+  // console.log(newPlan);
+  console.log("checkCanSave result",checkCanSave(newPlan, type));
 
   const checkValidCredit = (plan, type) => {
     let i = 0
@@ -194,6 +196,7 @@ function App() {
 
   const addCourse = (course,studyPlanCourses) => {
     const plan = [...newPlan, course];
+    console.log("courssssss", course)
     // console.log(plan);
     let i = 0;
     let c = 0;
@@ -202,6 +205,7 @@ function App() {
     };
 
     if(courseValidation(plan, newPlan, course, type)) {
+
       setNewPlan(plan);
     }
       else return;
@@ -247,12 +251,16 @@ function App() {
     setNewPlan([...plan])
   }
 
-  const onSave = (plan, type) => {
-    console.log(checkCanSave(newPlan, type));
-    console.log(plan);
+  const onSave = async (plan, type) => {
+    // console.log(checkCanSave(newPlan, type));
+    // console.log(plan);
     if (checkCanSave(plan, type)) {
       // setSaveValid(true);
-      setPlan([...newPlan]);
+      const np = [...newPlan]
+      setPlan(() => np);
+      // console.log("in save plan", plan);
+      await postCourses(plan);
+      setEditMode(false);
     } else {
       // setSaveValid(false)
       setMessage({msg:'The number of selected credits does not meet the contraint!', type:'danger'});
@@ -270,26 +278,60 @@ function App() {
   const handleLogin = async (credentials) => {
     try {
       const user = await API.logIn(credentials);
+      await getPlan();  
       setLoggedIn(true);
       setMessage({msg: `Welcome, ${user.name}!`, type: 'success'})
       setUser(user);
-      await getPlan(user.id);  
       return true;
     } catch(err) {
-      setMessage({msg: 'Username or Password is wrong!', type: 'danger'});
+      setMessage({msg: (err), type: 'danger'});
       return false;
     }
   };
 
-  const getPlan = async (userid) => {
+  const removePlanHandler = async () => {
+    try{
+      await removeStudyPlan(fetchedPlan.id);
+      await setNewPlan([]);
+      await setPlan([]);
+      // await setFetchedPlan([]);
+      setNewSelectedCredits();
+      // console.log("newPlan", newPlan);
+      // console.log("plan", plan);
+      // console.log("fetchedPlan", fetchedPlan);
+
+      // console.log("props.fetchedPlan.id", fetchedPlan.id);
+    } catch(err) {
+      setMessage({msg: 'Unable to remove the plan!', type: 'danger'});
+      return false;
+    }
+  };
+
+  const postPlanHandler = async (type) => {
+    try{
+      await postPlan(type);
+      await getPlan();
+    } catch(err) {
+      setMessage({msg: (err) , type: 'danger'});
+    }
+  }
+  
+  const getPlan = async () => {
     try {
-      const plan = await API.getStudyPlanAPI(userid);
-      // console.log(plan);
+      const plan = await API.getStudyPlanAPI();
+      // console.log("plan", plan);
+      // console.log("newPlan", newPlan);
+
       if (plan) {
         setUserplan(plan);
         setCreatePlan(true)
         setNewPlan(plan.courses);
         setPlan(plan.courses);
+        setFetchedPlan(plan);
+        // console.log("plan.courses", plan.courses);
+        // console.log("plan2", plan);
+        // console.log("newPlan2", newPlan);
+        setType(plan.type);
         let i = 0;
         let c = 0;
         for (i in plan.courses) {
@@ -297,33 +339,62 @@ function App() {
         };
 
         setNewSelectedCredits(c);
-      }
+      } 
+      // else {
+      //   setPlan([]);
+      //   setNewPlan([]);
+
+      // }
     }catch(err) {
-      setMessage({msg: err, type: 'danger'});
+      setMessage({msg: `Welcome ${user.name}. You have not set a study plan yet, choose a program type to start!`, type: 'success'});
     }
   };
+
+  const removeStudyPlan = async (planid) => {
+    try {
+      await API.removeStudyPlanAPI(planid);
+      await getPlan();
+      setCreatePlan(false);
+
+
+    } catch(err) {
+      setMessage({msg: "Cannot remove the plan!" , type: 'danger'});
+    };
+  };
+
+  const postPlan = async (type) => {
+    try {
+      await API.postPlanAPI(type);
+    } catch(err) {
+      setMessage({msg: (err) , type: 'danger'});
+    }
+  }
+
+  const postCourses = async (courses) => {
+    try {
+      await API.postCoursesAPI(courses);
+    } catch(err) {
+      setMessage({msg: (err) , type: 'danger'});
+    }
+  }
 
   useEffect(() => {
     const checkAuth = async() => {
     const userinfo = await API.getUserInfo();
-    // console.log("useeffect userinfo", userinfo);
       setLoggedIn(!!userinfo);
     }
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    if(loggedIn)
-      getPlan(1)
-  }, [loggedIn])
+  const handleLogout = async () => {
+    await API.logOutAPI();
+    setLoggedIn(false);
 
-  // const handleLogout = async () => {
-  //   await API.logOut();
-  //   setLoggedIn(false);
-  //   // clean up everything
-  //   setExams([]);
-  //   setMessage('');
-  // };
+    setPlan([]);
+    setNewPlan([]);
+    setFetchedPlan([]);
+    setMessage('');
+  };
 
 
 
@@ -333,15 +404,16 @@ function App() {
 
       <Router>
         <Row className='nav-bar'>
-          <CusNavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} setMessage={setMessage} />
+          <CusNavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} setMessage={setMessage} handleLogout={handleLogout} />
         </Row>
         {message && <Row><Alert className="fixed-alert" variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert></Row>}
         <Routes>
           <Route path='/login' element={ <LoginForm login={handleLogin} /> } />
           <Route path='/my-portal'
-            element={ loggedIn ? <CusContent userplan={userplan} courses={courseList} newPlan={newPlan} addCourse={addCourse} editMode={editMode}
-            loggedIn={true} progType={type} deleteCourse={deleteCourse} newSelectedCredits={newSelectedCredits} onEdit={onEdit} createPlan={createPlan}
-            setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} initPlan={initPlan} validCredit={validCredit} />
+            element={ loggedIn ? <CusContent userplan={userplan} courses={courseList} plan={plan} newPlan={newPlan} editMode={editMode}
+            loggedIn={true} progType={type} validCredit={validCredit} newSelectedCredits={newSelectedCredits} addCourse={addCourse}
+            deleteCourse={deleteCourse} onEdit={onEdit} createPlan={createPlan} setEditMode={setEditMode} saveValid={saveValid} onSave={onSave}
+            cancelHandler={cancelHandler} initPlan={initPlan} removePlanHandler={removePlanHandler} postPlanHandler={postPlanHandler}  />
             : <Navigate replace to='/login' /> }>
           </Route>
           <Route path='/'

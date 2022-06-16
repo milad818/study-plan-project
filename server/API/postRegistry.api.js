@@ -1,4 +1,5 @@
 const postRegistryBAL = require("../BAL/postRegistry.bal");
+const isLoggedIn = require("../isLoggedIn");
 
 class registry {
   constructor(coursecode, planid) {
@@ -8,7 +9,7 @@ class registry {
 }
 
 function postRegistryAPI(app) {
-  app.post("/api/registries", (req, res) => {
+  app.post("/api/registries", isLoggedIn, (req, res) => {
     const body = req.body
     if (body.courseCode !== undefined && body.planID !== undefined) {
       let newRegistry = new registry(body.courseCode, body.planID)

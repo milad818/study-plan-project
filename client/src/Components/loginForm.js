@@ -21,6 +21,7 @@ function LoginForm(props) {
 
   return (
     <div className='login-container2'>
+      <div className='login-heading'>Please enter your e-mail and password to login.</div>
       <div className='login-container1'>
         <Form className='login-form' onSubmit={handleSubmit}>
           <Form.Group className='use' controlId='username'>

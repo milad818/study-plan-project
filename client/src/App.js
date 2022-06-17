@@ -14,8 +14,6 @@ import API from './API';
 
 let Courses = [];
 
-
-
 function App() {
 
   const [plan, setPlan] = useState([]);
@@ -33,11 +31,15 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
   const [userplan, setUserplan] = useState([]);
+  const [addState, setAddState] = useState();
 
 
   function getAllCourseList() {
     fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => {
       Courses = data.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.enroll, x.incompatible, x.prepcourse));
+      // for(let i of Courses) {
+      //   if(i.maxStudents === 0) i.maxStudents = "-";
+      // }
       let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
       setCourseList(sortedCourses);
   
@@ -48,7 +50,20 @@ function App() {
     getAllCourseList();
   }, []);
 
-
+  useEffect(() => {
+    const checkAuth = async() => {
+    const userinfo = await API.getUserInfo();
+      setLoggedIn(!!userinfo);
+    }
+    checkAuth();
+  }, []);
+  
+  useEffect(() => {
+    if(message) {
+      setTimeout(() => {
+        setMessage(false);
+      }, 5000) }
+    }, [message])
 
   /******  VALIDATION ******/
 
@@ -100,14 +115,19 @@ function App() {
   }
 
   const checkComp = (c, np) => {
-    let i = 0;
-    let j = 0;
-    for (i in c.incomps) {
-      for (j in np)
+    for (let i in c.incomps) {
+      for (let j in np)
         if (c.incomps[i] === np[j].code)
           return false;
       }
     return true;
+  }
+
+  const checkFreeSeat = (course) => {
+
+    if(course.maxStudents !== 0 && course.enrolledStudents >= course.maxStudents)
+      return false;
+    else return true;
   }
 
   const checkPrep = (code, np,np2) => {
@@ -168,14 +188,22 @@ function App() {
     const valNewPlan = [...newPlan]
     if (!checkValidCredit(valPlan, type)) {    
       setMessage({msg:'The number of credits exceeds the maximum!', type:'danger'});
+      setAddState(false);
       return false;
     }
     if (!checkSameCode(course, valNewPlan)) {
       setMessage({msg:'The course has already been selected!', type:'danger'});
+      setAddState(false);
       return false;
     }
     if (!checkComp(course, valNewPlan)) {
-      setMessage({msg:'Incompatible!', type:'danger'});
+      setMessage({msg:`You cannot select "${course.courseName}" because it is incompatible with another course!`, type:'danger'});
+      setAddState(false);
+      return false;
+    }
+    if(!checkFreeSeat(course)) {
+      setMessage({msg:'The course has reached its maximum and is no longer available!', type:'danger'});
+      setAddState(false);
       return false;
     }
     return true;
@@ -206,8 +234,6 @@ function App() {
 
   const addCourse = (course,studyPlanCourses) => {
     const plan = [...newPlan, course];
-    console.log("courssssss", course)
-    // console.log(plan);
     let i = 0;
     let c = 0;
     for (i in plan) {
@@ -386,14 +412,7 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    const checkAuth = async() => {
-    const userinfo = await API.getUserInfo();
-      setLoggedIn(!!userinfo);
-    }
-    checkAuth();
-  }, []);
-
+  
   const handleLogout = async () => {
     await API.logOutAPI();
     setLoggedIn(false);
@@ -403,18 +422,16 @@ function App() {
     setFetchedPlan([]);
     setMessage('');
   };
-
-
-
-
-  return (
-    <Container>
+    
+    
+    return (
+      <Container>
 
       <Router>
         <Row className='nav-bar'>
           <CusNavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} setMessage={setMessage} handleLogout={handleLogout} />
         </Row>
-        {message && <Row><Alert className="fixed-alert" variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert></Row>}
+        {message && <Row><div className="fixed-alert"><Alert  variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert></div></Row>}
         <Routes>
           <Route path='/login' element={ <LoginForm login={handleLogin} /> } />
           <Route path='/my-portal'

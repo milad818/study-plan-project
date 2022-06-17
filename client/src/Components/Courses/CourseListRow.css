@@ -1,0 +1,35 @@
+.course-title {
+  padding-left: 5vh;
+  font-weight: bold;
+  font-size: small;
+}
+
+.course-description {
+  font-size: small;
+}
+
+.button-add{
+  font-size: large;
+  width: 11vh;
+}
+
+.acc-header {
+  height: fit-content
+  
+}
+
+.acc-header-text {
+  background-color: coral;
+}
+
+.inc-prep {
+  font-size: small;
+}
+
+.course-warning {
+  background-color: crimson;
+  color: antiquewhite;
+  width: 5vh;
+  text-align: center;
+  float: right;
+}

@@ -16,7 +16,7 @@ function Plan(props) {
   return (
     <Container style={{marginTop:'2rem'}}>
       <Row xs="auto" >
-        <Col><h1 style={{fontSize:'medium'}}>My Study Plan ({props.progType})</h1></Col>
+        <Col><h1 style={{fontSize:'medium'}}>My Study Plan ({props.progType} {"-"} {props.progType==="Full-Time" ? "Min. Credit: 60 Max. Credit: 80" : "Min. Credit: 20 Max. Credit: 40"})</h1></Col>
         <Col><Button variant="link" size="sm" onClick={() => {props.removePlanHandler()}} >(Remove Plan)</Button></Col>
       </Row>
       <Row><Table striped bordered hover>
@@ -25,8 +25,8 @@ function Plan(props) {
             <th>Code</th>
             <th>Course Name</th>
             <th>Credits</th>
-            <th>No. Attendees</th>
-            <th>Max. Attendees</th>
+            {/* <th>Enrolled Students</th> */}
+            {/* <th>Max. Students</th> */}
             <th>Action</th>
           </tr>
         </thead>
@@ -36,7 +36,7 @@ function Plan(props) {
           ))}
         </tbody>
       </Table></Row>
-      <h2 style={{fontSize:"small", float: "center"}} >Selected Credits: {props.selectedCredits}</h2>
+      <h2 style={{fontSize:"small", float: "center"}} >Selected Credits: {props.selectedCredits} </h2>
       {props.editMode ? <><Button variant="primary" type="button" onClick={(e) => {saveHandler(e)}} 
       /*disabled={props.saveValid ? false : true}*/  >Save</Button> &nbsp;
       <Button variant="secondary" type="button" onClick={() => {props.setEditMode(false); props.cancelHandler()}}>Cancel</Button></> :

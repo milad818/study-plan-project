@@ -13,12 +13,12 @@ function PlanRow(props) {
       <td>
         {props.course.credits}
       </td>
-      <td>
-        {props.course.noStudents}
-      </td>
-      <td>
+      {/* <td>
+        {props.course.enrolledStudents}
+      </td> */}
+      {/* <td>
         {props.course.maxStudents}
-      </td>
+      </td> */}
       <td>
         <PlanRowActions courseId={props.course.code} deleteCourse={props.deleteCourse} editMode={props.editMode}></PlanRowActions>
       </td>

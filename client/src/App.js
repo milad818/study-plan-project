@@ -35,29 +35,29 @@ function App() {
   const [userplan, setUserplan] = useState([]);
 
 
+  function getAllCourseList() {
+    fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => {
+      Courses = data.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.enroll, x.incompatible, x.prepcourse));
+      let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
+      setCourseList(sortedCourses);
+  
+    });
+  }
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => {
-    Courses = data.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.incompatible, x.prepcourse));
-    let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
-    setCourseList(sortedCourses);
-
-  });
+    getAllCourseList();
   }, []);
 
 
 
-  // VALIDATION <----
+  /******  VALIDATION ******/
 
   const checkCanSave = (plan, type) => {
     let i = 0
     let c = 0
-    // console.log(plan);
     for (i in plan) {
       c += plan[i].credits
     };
-    // console.log("in validation plan", plan);
-    // console.log(c);
     if (type === "Full-Time") {
       if (c < 60) {
         return false;
@@ -67,11 +67,10 @@ function App() {
         return false;
       }
     };
-    // console.log(c);
     return true;
   };
-  // console.log(newPlan);
-  console.log("checkCanSave result",checkCanSave(newPlan, type));
+
+  // console.log("checkCanSave result",checkCanSave(newPlan, type));
 
   const checkValidCredit = (plan, type) => {
     let i = 0
@@ -88,7 +87,6 @@ function App() {
         return false;
       }
     };
-    // console.log("in validation", c)
     return true;
   }
 
@@ -127,17 +125,29 @@ function App() {
   }
 
   // const checkPrep = (courseCode, np) => {
-  //   let i = 0;
-  //   let j = 0;
-  //   for(i in np) {
-  //     for(j in np.preps) {
-  //       if(courseCode === np[i].preps[j]) {
-  //         return false;
-  //       }
+  //   for(let i in np) {
+  //     for(let j of np.preps) {
+  //       np[i].preps[j].find(x => courseCode === x);
+  //       // console.log(np[i].preps[j]);
+
+  //       return false;
   //     }
-  //   return true;
   //   }
+  //   return true;
   // }
+
+  // const checkPrep = (courseCode, np) => {
+  //   for(let i in np) {
+  //     for(let j of np.preps) {
+  //       if(np[i].preps[j]===courseCode)
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+
+  // console.log("checkCanSave result",checkPrep(courseCode, np));
+
 
   const checkPrepAdded = (c, np) => {
     let i = 0;
@@ -179,7 +189,7 @@ function App() {
     
     // console.log(np);
     const np = newPlan.filter(cor => cor.code !== courseCode);
-    if(checkPrep(courseCode, newPlan,np)) {
+    if(checkPrep(courseCode, np)) {
       setNewPlan(() => np);
       console.log("newPlan after", np);
     } else {
@@ -261,6 +271,8 @@ function App() {
       // console.log("in save plan", plan);
       await postCourses(plan);
       setEditMode(false);
+      await getAllCourseList();
+      await getPlan();
     } else {
       // setSaveValid(false)
       setMessage({msg:'The number of selected credits does not meet the contraint!', type:'danger'});
@@ -294,13 +306,9 @@ function App() {
       await removeStudyPlan(fetchedPlan.id);
       await setNewPlan([]);
       await setPlan([]);
-      // await setFetchedPlan([]);
+      await getAllCourseList();
+      await getPlan();
       setNewSelectedCredits();
-      // console.log("newPlan", newPlan);
-      // console.log("plan", plan);
-      // console.log("fetchedPlan", fetchedPlan);
-
-      // console.log("props.fetchedPlan.id", fetchedPlan.id);
     } catch(err) {
       setMessage({msg: 'Unable to remove the plan!', type: 'danger'});
       return false;
@@ -346,7 +354,7 @@ function App() {
 
       // }
     }catch(err) {
-      setMessage({msg: `Welcome ${user.name}. You have not set a study plan yet, choose a program type to start!`, type: 'success'});
+      setMessage({msg: `NOTICE! You have not set a study plan yet, choose a program type to start!`, type: 'danger'});
     }
   };
 

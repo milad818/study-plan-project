@@ -30,7 +30,7 @@ function CourseListRow(props) {
               <div style={{ fontWeight: 'bold' }}>Course: {props.course.courseName} </div> &nbsp;&nbsp;
               <div> Code: {props.course.code} &nbsp;&nbsp;
                     Credits: {props.course.credits} &nbsp;&nbsp;
-                    No. Students: {props.course.noStudents} &nbsp;&nbsp;
+                    Enrolled Students: {props.course.enrolledStudents} &nbsp;&nbsp;
                     Max. Students: {props.course.maxStudents}
               </div>
             </Accordion.Header>

@@ -51,12 +51,17 @@ function dbfuncs() {
   };
 
   this.getAllCourses = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
+        const allRegistries = await this.getAllRegisteries();
         const sql = "SELECT * FROM course";
         this.db.all(sql, [], (err, data) => {
           if (err) reject(err)
           else {
+            for(let i of data){
+              let singleCourse = allRegistries.filter(x => x.courseCode == i.code);
+              i.enroll = singleCourse.length;
+            }
             data.map(course => course.incompatible = course.incompatible ? course.incompatible.split(",") : undefined);
             data.map(course => course.prepcourse = course.prepcourse ? course.prepcourse.split(",") : undefined);
           }
@@ -186,7 +191,7 @@ function dbfuncs() {
       try {
         const sql = "SELECT * FROM enregistry";
         this.db.all(sql, [], (err, data) => {
-          if (err) reject(err);
+          if(err) reject(err);
           else resolve(data);
         });
       } catch (error) {
@@ -195,6 +200,19 @@ function dbfuncs() {
     });
   }
 
+  // this.getCoursesByPlanid = (planid) => {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       const sql = "SELECT * FROM enregistry WHERE planID=?";
+  //       this.db.all(sql, [planid], (err, data) => {
+  //         if(err) reject(err);
+  //         else resolve(data);
+  //       })
+  //     } catch {
+  //       reject(error);
+  //     }
+  //   });
+  // }
 
   this.getRegistryInfo = (userid) => {
     return new Promise(async (resolve, reject) => {
@@ -203,7 +221,16 @@ function dbfuncs() {
         if (!studyPlan) {
           resolve(undefined);
         }
-        const planCourses = await this.getAllRegisteries();
+        const allRegistries = await this.getAllRegisteries();
+        // const planCourseCodes = await this.getCoursesByPlanid(studyPlan.id);
+
+        console.log(allRegistries);
+        // console.log(studyPlan);
+        // const oneCourseList = [];
+        // for(let course of planCourses) {
+
+        // }
+
         // // // const sql = "SELECT * FROM enregistry JOIN course ON course.code=enregistry.courseCode WHERE planID=?";
         // // const sqlPlan = "SELECT * FROM plan JOIN enregistry ON plan.id=enregistry.planID WHERE userID=?";
         // // // const sql = "SELECT * FROM course JOIN enregistry ON course.code=enregistry.courseCode JOIN plan ON plan.id=enregistry.planID WHERE planID=?";
@@ -221,6 +248,8 @@ function dbfuncs() {
             const prep = registrydata.prepcourse ? x.prepcourse.split(",") : [];
             const plan = registrydata.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, incomp, prep));
             studyPlan.courses = plan;
+            // console.log("registrydata", registrydata);
+            console.log("studyPlan", studyPlan);
             resolve(studyPlan);
           }
         })

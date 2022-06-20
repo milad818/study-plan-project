@@ -23,7 +23,7 @@ function CourseListRow(props) {
 
     <Container fluid={'md'}>
       <Row>
-        <Col md="auto" >{props.editMode ? <Button className='button-add' disabled={props.validCredit ? false : true} onClick={(e) => {onClick(e)}} >+</Button> : <FaBookOpen></FaBookOpen>}</Col>
+        <Col md="auto" >{props.editMode ? <Button className='button-add' variant='success' disabled={props.validCredit ? false : true} onClick={(e) => {onClick(e)}} >+</Button> : <FaBookOpen></FaBookOpen>}</Col>
         <Col><Accordion defaultActiveKey={['0']} alwaysOpen>
           <Accordion.Item eventKey="1">
             <Accordion.Header className='acc-header' >
@@ -36,8 +36,8 @@ function CourseListRow(props) {
               </div>
             </Accordion.Header>
             <Accordion.Body>
-              {props.course.incomps ? <div className='inc-prep' >- Incompatible with {props.course.incomps.join(", ")} &nbsp;&nbsp;</div> : <div className='inc-prep'>- There are no incompatibilities!&nbsp;&nbsp;</div>}
-              {props.course.preps ? <div className='inc-prep' >- Preparatory Courses: {props.course.preps.join(", ")} &nbsp;&nbsp;</div> : <div className='inc-prep'>- There are no preparatory courses!&nbsp;&nbsp;</div>}
+              {props.course.incomps && props.course.incomps.length !== 0 ? <div className='inc-prep' >- Incompatible with {props.course.incomps.join(", ")} &nbsp;&nbsp;</div> : <div className='inc-prep'>- There are no incompatibilities!&nbsp;&nbsp;</div>}
+              {props.course.preps && props.course.preps.length !== 0 ? <div className='inc-prep' >- Preparatory Courses: {props.course.preps.join(", ")} &nbsp;&nbsp;</div> : <div className='inc-prep'>- There are no preparatory courses!&nbsp;&nbsp;</div>}
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>

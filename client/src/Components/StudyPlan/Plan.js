@@ -1,5 +1,6 @@
 import { Table, Container, Row, Col, Button } from 'react-bootstrap';
 import PlanRow from "./PlanRow";
+import './Plan.css'
 
 
 function Plan(props) {
@@ -17,7 +18,7 @@ function Plan(props) {
     <Container style={{marginTop:'2rem'}}>
       <Row xs="auto" >
         <Col><h1 style={{fontSize:'medium'}}>My Study Plan ({props.progType} {"-"} {props.progType==="Full-Time" ? "Min. Credit: 60 Max. Credit: 80" : "Min. Credit: 20 Max. Credit: 40"})</h1></Col>
-        <Col><Button variant="link" size="sm" onClick={() => {props.removePlanHandler()}} >(Remove Plan)</Button></Col>
+        <Col className='remove-plan' ><Button variant="link" size="sm" onClick={() => {props.removePlanHandler()}} >(Remove Plan)</Button></Col>
       </Row>
       <Row><Table striped bordered hover>
         <thead>

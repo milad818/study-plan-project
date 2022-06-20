@@ -130,19 +130,16 @@ function App() {
     else return true;
   }
 
-  const checkPrep = (code, np,np2) => {
-    const course = np.find(x => x.code === code);
-    console.log("inside",course);
-    if(course.preps) {
-      for(let i of course.preps) {
-        const prep = np2.find(x => x.code === i)
-        console.log("course inside",prep);
-
-        if(prep) return true;
-      }
+  const checkPrepAdded = (course, studyPlanCourseList) => {
+    if(!course.preps) return true;
+    const alreadyAddedPreps = course.preps.filter(x => studyPlanCourseList.find(y => y.code.trim() === x.trim()))
+    if(alreadyAddedPreps.length === course.preps.length) {
+      return true;
     }
     return false;
   }
+
+  // console.log(checkPrep(course))
 
   // const checkPrep = (courseCode, np) => {
   //   for(let i in np) {
@@ -169,14 +166,13 @@ function App() {
   // console.log("checkCanSave result",checkPrep(courseCode, np));
 
 
-  const checkPrepAdded = (c, np) => {
-    let i = 0;
-    let j = 0;
-    for (i in c.preps) {
-      for (j in np)
-        if (c.preps[i] === np[j].code)
-          return true;
-      }
+  const checkPrep = (courseCode, studyPlanCourseList) => {
+    const course = studyPlanCourseList.find(x => x.code === courseCode);
+    if(!course) return true;
+    const existingPrep = studyPlanCourseList.filter(x => x.preps.find(y => y.trim() === courseCode.trim()))
+    if(!existingPrep.length) {
+      return true;
+    }
     return false;
   }
 
@@ -188,51 +184,60 @@ function App() {
     const valNewPlan = [...newPlan]
     if (!checkValidCredit(valPlan, type)) {    
       setMessage({msg:'The number of credits exceeds the maximum!', type:'danger'});
-      setAddState(false);
       return false;
     }
     if (!checkSameCode(course, valNewPlan)) {
       setMessage({msg:'The course has already been selected!', type:'danger'});
-      setAddState(false);
       return false;
     }
     if (!checkComp(course, valNewPlan)) {
       setMessage({msg:`You cannot select "${course.courseName}" because it is incompatible with another course!`, type:'danger'});
-      setAddState(false);
+      return false;
+    }
+    if (!checkPrepAdded(course, newPlan)) {
+      // console.log(checkPrepAdded(course, valNewPlan));
+      setMessage({msg:'Please add the preparatory course first!', type:'danger'});
       return false;
     }
     if(!checkFreeSeat(course)) {
       setMessage({msg:'The course has reached its maximum and is no longer available!', type:'danger'});
-      setAddState(false);
       return false;
     }
     return true;
   }
 
 
-  const deleteCourse = (courseCode) => {
+  const deleteCourse = async (courseCode) => {
 
-    console.log("chechPrep",checkPrep(courseCode, newPlan));
+    // console.log("chechPrep",checkPrep(courseCode, newPlan));
     console.log("new plan before", newPlan);
     
     // console.log(np);
-    const np = newPlan.filter(cor => cor.code !== courseCode);
-    if(checkPrep(courseCode, np)) {
+    if(checkPrep(courseCode, newPlan)) {
+      const np = newPlan.filter(cor => cor.code !== courseCode);
       setNewPlan(() => np);
-      console.log("newPlan after", np);
+      // console.log("newPlan after", np);
+      let i = 0;
+      let c = 0;
+      for (i in np) {
+        c += np[i].credits;
+      };
+      setNewSelectedCredits(c);
+      const courseToDelete = courseList.find(x => x.code === courseCode);
+      const newEnrolledStudents = courseToDelete.enrolledStudents - 1;
+      courseToDelete.enrolledStudents = newEnrolledStudents;
+
+      // console.log(newEnrolledStudents);
+      // await getPlan();
+      // await getAllCourseList();
+
     } else {
       setMessage({msg:'You cannot remove the preparatory course first!', type:'danger'});
       return;
     }
-    let i = 0;
-    let c = 0;
-    for (i in np) {
-      c += np[i].credits;
-    };
-    setNewSelectedCredits(c);
   }
 
-  const addCourse = (course,studyPlanCourses) => {
+  const addCourse = async (course,studyPlanCourses) => {
     const plan = [...newPlan, course];
     let i = 0;
     let c = 0;
@@ -247,10 +252,10 @@ function App() {
       else return;
 
     //replace condition with the main validation func
-    if (checkValidCredit(plan, type)) {    
-      setNewPlan(plan);
-    } else {
-      setMessage({msg:'The number of selected credits exceeds the maximum!', type:'danger'});
+    // if (checkValidCredit(plan, type)) {    
+    //   setNewPlan(plan);
+    // } else {
+    //   setMessage({msg:'The number of selected credits exceeds the maximum!', type:'danger'});
       
     // if (checkSameCode(course, newPlan)) {
     //   setNewPlan(plan);
@@ -269,12 +274,14 @@ function App() {
       // setNewPlan(plan);
       // } else {
       // setMessage({msg:'You must add the preparatory course first!', type:'danger'});
-      return;
-    }
+    
+      //   return;
+      // }
     
       // setValidCredit(false);
     // }
     setNewSelectedCredits(c);
+    await getAllCourseList();
   }
 
   const initPlan = (type) => {
@@ -288,29 +295,25 @@ function App() {
   }
 
   const onSave = async (plan, type) => {
-    // console.log(checkCanSave(newPlan, type));
-    // console.log(plan);
     if (checkCanSave(plan, type)) {
-      // setSaveValid(true);
       const np = [...newPlan]
       setPlan(() => np);
-      // console.log("in save plan", plan);
       await postCourses(plan);
       setEditMode(false);
       await getAllCourseList();
       await getPlan();
     } else {
-      // setSaveValid(false)
       setMessage({msg:'The number of selected credits does not meet the contraint!', type:'danger'});
       return;
     }
     setSelectedCredits(newSelectedCredits);
-    // console.log(newSelectedCredits);
   }
 
-  const cancelHandler = () => {
+  const cancelHandler = async () => {
     setNewPlan([...plan]);
     setNewSelectedCredits(selectedCredits);
+    await getAllCourseList();
+
   }
 
   const handleLogin = async (credentials) => {
@@ -353,33 +356,21 @@ function App() {
   const getPlan = async () => {
     try {
       const plan = await API.getStudyPlanAPI();
-      // console.log("plan", plan);
-      // console.log("newPlan", newPlan);
-
       if (plan) {
         setUserplan(plan);
         setCreatePlan(true)
         setNewPlan(plan.courses);
         setPlan(plan.courses);
         setFetchedPlan(plan);
-        // console.log("plan.courses", plan.courses);
-        // console.log("plan2", plan);
-        // console.log("newPlan2", newPlan);
         setType(plan.type);
         let i = 0;
         let c = 0;
         for (i in plan.courses) {
           c += plan.courses[i].credits;
         };
-
         setNewSelectedCredits(c);
       } 
-      // else {
-      //   setPlan([]);
-      //   setNewPlan([]);
-
-      // }
-    }catch(err) {
+    } catch(err) {
       setMessage({msg: `NOTICE! You have not set a study plan yet, choose a program type to start!`, type: 'danger'});
     }
   };
@@ -389,8 +380,6 @@ function App() {
       await API.removeStudyPlanAPI(planid);
       await getPlan();
       setCreatePlan(false);
-
-
     } catch(err) {
       setMessage({msg: "Cannot remove the plan!" , type: 'danger'});
     };
@@ -442,7 +431,7 @@ function App() {
             : <Navigate replace to='/login' /> }>
           </Route>
           <Route path='/'
-            element={<CusContent courses={courseList} newPlan={newPlan} addCourse={addCourse} editMode={editMode} loggedIn={false}
+            element={<CusContent courses={courseList} loggedIn={false} newPlan={newPlan} addCourse={addCourse} editMode={editMode} 
               progType={type} deleteCourse={deleteCourse} newSelectedCredits={newSelectedCredits} onEdit={onEdit} createPlan={createPlan}
               setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} initPlan={initPlan} validCredit={validCredit} />}>
           </Route>

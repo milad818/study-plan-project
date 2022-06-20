@@ -6,8 +6,6 @@ function postNewRegistryAPI(app) {
   app.post("/api/courses", isLoggedIn, (req, res) => {
     let userid = req.user.id;
     const courses = req.body.courses;
-    console.log(userid);
-    console.log("in api", courses);
     if (courses !== undefined) {
       postNewRegistryBAL(courses, userid)
         .then(result => {

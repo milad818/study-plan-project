@@ -58,12 +58,12 @@ function dbfuncs() {
         this.db.all(sql, [], (err, data) => {
           if (err) reject(err)
           else {
-            for(let i of data){
+            for (let i of data) {
               let singleCourse = allRegistries.filter(x => x.courseCode == i.code);
               i.enroll = singleCourse.length;
             }
-            data.map(course => course.incompatible = course.incompatible ? course.incompatible.split(",") : undefined);
-            data.map(course => course.prepcourse = course.prepcourse ? course.prepcourse.split(",") : undefined);
+            data.map(course => course.incompatible = course.incompatible ? course.incompatible.split(",") : []);
+            data.map(course => course.prepcourse = course.prepcourse ? course.prepcourse.split(",") : []);
           }
           resolve(data);
         });
@@ -172,26 +172,26 @@ function dbfuncs() {
   //   });
   // };
 
-  this.deleteRegistry = (planid) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const sql = "DELETE FROM enregistry WHERE planID=?";
-        this.db.run(sql, [planid], (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
+  // this.deleteRegistry = (planid) => {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       const sql = "DELETE FROM enregistry WHERE planID=?";
+  //       this.db.run(sql, [planid], (err, data) => {
+  //         if (err) reject(err);
+  //         else resolve(data);
+  //       });
+  //     } catch (error) {
+  //       reject(error);
+  //     }
+  //   });
+  // };
 
   this.getAllRegisteries = () => {
     return new Promise((resolve, reject) => {
       try {
         const sql = "SELECT * FROM enregistry";
         this.db.all(sql, [], (err, data) => {
-          if(err) reject(err);
+          if (err) reject(err);
           else resolve(data);
         });
       } catch (error) {
@@ -222,15 +222,6 @@ function dbfuncs() {
           resolve(undefined);
         }
         const allRegistries = await this.getAllRegisteries();
-        // const planCourseCodes = await this.getCoursesByPlanid(studyPlan.id);
-
-        console.log(allRegistries);
-        // console.log(studyPlan);
-        // const oneCourseList = [];
-        // for(let course of planCourses) {
-
-        // }
-
         // // // const sql = "SELECT * FROM enregistry JOIN course ON course.code=enregistry.courseCode WHERE planID=?";
         // // const sqlPlan = "SELECT * FROM plan JOIN enregistry ON plan.id=enregistry.planID WHERE userID=?";
         // // // const sql = "SELECT * FROM course JOIN enregistry ON course.code=enregistry.courseCode JOIN plan ON plan.id=enregistry.planID WHERE planID=?";
@@ -238,18 +229,16 @@ function dbfuncs() {
         // this.db.get(sqlPlan, [userid], (err, dataPlan) => {
         const sql = "SELECT * FROM course JOIN enregistry on course.code=enregistry.courseCode WHERE planID=?"
         this.db.all(sql, [studyPlan.id], (err, registrydata) => {
-
           if (err) reject(err);
           else {
-            // console.log(dataPlan);
-            // console.log(dataCourses);
-            // dataPlan.courses = dataCourses;
-            const incomp = registrydata.incompatible ? x.incompatible.split(",") : [];
-            const prep = registrydata.prepcourse ? x.prepcourse.split(",") : [];
-            const plan = registrydata.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, incomp, prep));
-            studyPlan.courses = plan;
-            // console.log("registrydata", registrydata);
-            console.log("studyPlan", studyPlan);
+            const result = registrydata.map(data => {
+              data.incomp = data.incompatible ? data.incompatible.split(",") : [];
+              data.prep = data.prepcourse ? data.prepcourse.split(",") : [];
+              return data;
+            })
+            const courses = result.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.incomp, x.prep));
+            studyPlan.courses = courses;
+            console.log(studyPlan)
             resolve(studyPlan);
           }
         })
@@ -285,10 +274,8 @@ function dbfuncs() {
   this.postNewRegistry = (courses, userid) => {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(userid);
-        console.log("in api", courses);
         const studyPlan = await this.getPlan(userid);
-        if(!studyPlan) {
+        if (!studyPlan) {
           resolve(undefined);
         }
         const REMOVEsql = "DELETE FROM enregistry WHERE planID=?";
@@ -296,19 +283,14 @@ function dbfuncs() {
           if (err) reject(err);
           else resolve(data);
         });
-        for(const i of courses) {
-        await this.postRegistry(i.code, studyPlan.id);
+        for (const i of courses) {
+          await this.postRegistry(i.code, studyPlan.id);
         }
       } catch (error) {
         reject(error);
       }
     });
   };
-
-
-
-
-
 
 };
 

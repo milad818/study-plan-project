@@ -1,0 +1,13 @@
+.logout-button {
+  border-color: aliceblue;
+  border-width: 1px;
+  text-shadow: 2vh;
+  font-weight: bold;
+}
+
+.login-button {
+  border-color:blue;
+  border-width: 1px;
+  text-shadow: 2vh;
+  font-weight: bold;
+}

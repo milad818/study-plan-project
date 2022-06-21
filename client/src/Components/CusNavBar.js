@@ -1,11 +1,11 @@
 import { Navbar, Container, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './CusNavBar.css';
-import { RiAccountCircleLine } from "react-icons/ri"
-
 
 
 function CusNavbar(props) {
+    let location = useLocation()
+
     function onLogout(e) {
         props.handleLogout();
         props.setLoggedIn(false);
@@ -17,9 +17,9 @@ function CusNavbar(props) {
             <Container fluid>
                 <Navbar.Brand>Politecnico di Torino</Navbar.Brand>
                 <Navbar.Text >
-                    {props.loggedIn ? <Link to="/" ><Button className='logout-button' onClick={(e) => {onLogout(e)}} >Log out</Button></Link> :
-                    document.location.pathname === "/" ? <Link to="/login" ><Button className='login-button' variant='light' >Log in</Button></Link> :
-                    document.location.pathname === "/login" ? "" : <Link to="/login" ><Button className='login-button' variant='light' >Log in</Button></Link> }
+                    {location.pathname === "/my-portal" ? <Link to="/" ><Button className='logout-button' onClick={(e) => {onLogout(e)}} >Log out</Button></Link> :
+                    location.pathname === "/" ? <Link to="/login" ><Button className='login-button' variant='light' >Log in</Button></Link> :
+                    location.pathname === "/login" ? "" : <Link to="/login" ><Button className='login-button' variant='light' >Log in</Button></Link> }
                 </Navbar.Text>
             </Container>
         </Navbar>

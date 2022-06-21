@@ -53,7 +53,11 @@ function App() {
   useEffect(() => {
     const checkAuth = async() => {
     const userinfo = await API.getUserInfo();
-      setLoggedIn(!!userinfo);
+    if(userinfo !== false) {
+      setUser(userinfo);
+      setLoggedIn(true);
+      await getPlan();
+    }
     }
     checkAuth();
   }, []);
@@ -85,7 +89,6 @@ function App() {
     return true;
   };
 
-  // console.log("checkCanSave result",checkCanSave(newPlan, type));
 
   const checkValidCredit = (plan, type) => {
     let i = 0
@@ -139,33 +142,6 @@ function App() {
     return false;
   }
 
-  // console.log(checkPrep(course))
-
-  // const checkPrep = (courseCode, np) => {
-  //   for(let i in np) {
-  //     for(let j of np.preps) {
-  //       np[i].preps[j].find(x => courseCode === x);
-  //       // console.log(np[i].preps[j]);
-
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
-
-  // const checkPrep = (courseCode, np) => {
-  //   for(let i in np) {
-  //     for(let j of np.preps) {
-  //       if(np[i].preps[j]===courseCode)
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
-
-  // console.log("checkCanSave result",checkPrep(courseCode, np));
-
-
   const checkPrep = (courseCode, studyPlanCourseList) => {
     const course = studyPlanCourseList.find(x => x.code === courseCode);
     if(!course) return true;
@@ -175,9 +151,6 @@ function App() {
     }
     return false;
   }
-
-
-  // console.log("checkComp", checkPrep(courseList[0].code, newPlan));
 
   const courseValidation = (plan, newPlan, course, type) => {
     const valPlan = [...plan];
@@ -208,15 +181,9 @@ function App() {
 
 
   const deleteCourse = async (courseCode) => {
-
-    // console.log("chechPrep",checkPrep(courseCode, newPlan));
-    console.log("new plan before", newPlan);
-    
-    // console.log(np);
     if(checkPrep(courseCode, newPlan)) {
       const np = newPlan.filter(cor => cor.code !== courseCode);
       setNewPlan(() => np);
-      // console.log("newPlan after", np);
       let i = 0;
       let c = 0;
       for (i in np) {
@@ -226,10 +193,6 @@ function App() {
       const courseToDelete = courseList.find(x => x.code === courseCode);
       const newEnrolledStudents = courseToDelete.enrolledStudents - 1;
       courseToDelete.enrolledStudents = newEnrolledStudents;
-
-      // console.log(newEnrolledStudents);
-      // await getPlan();
-      // await getAllCourseList();
 
     } else {
       setMessage({msg:'You cannot remove the preparatory course first!', type:'danger'});
@@ -244,42 +207,10 @@ function App() {
     for (i in plan) {
       c += plan[i].credits;
     };
-
     if(courseValidation(plan, newPlan, course, type)) {
-
       setNewPlan(plan);
     }
       else return;
-
-    //replace condition with the main validation func
-    // if (checkValidCredit(plan, type)) {    
-    //   setNewPlan(plan);
-    // } else {
-    //   setMessage({msg:'The number of selected credits exceeds the maximum!', type:'danger'});
-      
-    // if (checkSameCode(course, newPlan)) {
-    //   setNewPlan(plan);
-    // } else {
-    //   setMessage({msg:'The course has already been selected!', type:'danger'});
-    // }
-
-    // console.log(checkComp(course, newPlan));
-    
-    // if (checkComp(course, newPlan)) {
-    //   setNewPlan(plan);
-    // } else {
-    //   setMessage({msg:'Incompatible!', type:'danger'});
-      // console.log(checkPrepAdded(course, newPlan));
-      // if (!checkPrepAdded(course, newPlan)) {
-      // setNewPlan(plan);
-      // } else {
-      // setMessage({msg:'You must add the preparatory course first!', type:'danger'});
-    
-      //   return;
-      // }
-    
-      // setValidCredit(false);
-    // }
     setNewSelectedCredits(c);
     await getAllCourseList();
   }
@@ -311,9 +242,12 @@ function App() {
 
   const cancelHandler = async () => {
     setNewPlan([...plan]);
-    setNewSelectedCredits(selectedCredits);
     await getAllCourseList();
-
+    let c = 0;
+    for (let i in plan) {
+      c += plan[i].credits;
+    };
+    setNewSelectedCredits(c);
   }
 
   const handleLogin = async (credentials) => {
@@ -424,11 +358,10 @@ function App() {
         <Routes>
           <Route path='/login' element={ <LoginForm login={handleLogin} /> } />
           <Route path='/my-portal'
-            element={ loggedIn ? <CusContent userplan={userplan} courses={courseList} plan={plan} newPlan={newPlan} editMode={editMode}
+            element={ <CusContent userplan={userplan} courses={courseList} plan={plan} newPlan={newPlan} editMode={editMode}
             loggedIn={true} progType={type} validCredit={validCredit} newSelectedCredits={newSelectedCredits} addCourse={addCourse}
             deleteCourse={deleteCourse} onEdit={onEdit} createPlan={createPlan} setEditMode={setEditMode} saveValid={saveValid} onSave={onSave}
-            cancelHandler={cancelHandler} initPlan={initPlan} removePlanHandler={removePlanHandler} postPlanHandler={postPlanHandler}  />
-            : <Navigate replace to='/login' /> }>
+            cancelHandler={cancelHandler} initPlan={initPlan} removePlanHandler={removePlanHandler} postPlanHandler={postPlanHandler}  /> }>
           </Route>
           <Route path='/'
             element={<CusContent courses={courseList} loggedIn={false} newPlan={newPlan} addCourse={addCourse} editMode={editMode} 

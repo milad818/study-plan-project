@@ -6,6 +6,7 @@ function getUserInfoAPI(app) {
 
     if (req.isAuthenticated()) {
       const user = req.user;
+      // console.log("useeeeeeeeeeeeeeeeeeeeeer", user);
       res.json({user:user});
     }
     else res.json({user:false});

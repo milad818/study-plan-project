@@ -1,5 +1,5 @@
 .course-title {
-  padding-left: 5vh;
+  /* padding-left: 5vh; */
   font-weight: bold;
   font-size: small;
 }
@@ -14,7 +14,7 @@
 }
 
 .acc-header {
-  height: fit-content
+  height: fit-content;
   
 }
 

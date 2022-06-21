@@ -27,13 +27,10 @@ function postPlanAPI(app) {
         const mincredit = 20;
         const maxcredit = 40;
         const user = req.user.id;
-        // console.log("part user", user)
          planToPost = new Plan(mincredit, maxcredit, body.type, user);
       } else{
         return res.status(404).send({msg: "Entry is not valid!"})
       }
-      console.log(planToPost);
-
       postPlanBAL(planToPost)
         .then(result => {
           return res.status(201).send();

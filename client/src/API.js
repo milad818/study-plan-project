@@ -93,7 +93,6 @@ const postPlanAPI = async (type) => {
 };
 
 const postCoursesAPI = async (courses) => {
-  console.log("in api courses", courses)
   const res = await fetch(SERVER_URL + '/api/courses', {
     method: 'POST',
     credentials: 'include',

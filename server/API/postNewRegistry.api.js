@@ -9,13 +9,17 @@ function postNewRegistryAPI(app) {
     if (courses !== undefined) {
       postNewRegistryBAL(courses, userid)
         .then(result => {
-          return res.status(201).send();
+          console.log("result",result);
+          if(result) return res.status(201).send();
+          else {
+          return res.status(422).json("");
+          }
         })
         .catch((err) => {
-            return res.status(500).json(err);
+          return res.status(500).json(err);
         });
     }
-    else return res.status(500).json({"message": "Either courseCode or planID is undefined!"});
+    else return res.status(500).json({ "message": "Either courseCode or planID is undefined!" });
   });
 }
 

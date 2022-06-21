@@ -73,20 +73,6 @@ function dbfuncs() {
     });
   }
 
-  // this.postPlan = (plan) => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const sql = "INSERT INTO plan (minCredit, maxCredit, type, userID) VALUES (?, ?, ?, ?)";
-  //       this.db.run(sql, [plan.minCredit, plan.maxCredit, plan.type, plan.userID], (err, row) => {
-  //         if (err) reject(err);
-  //         else resolve(row);
-  //       });
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   })
-  // };
-
   this.postPlan = (plan) => {
     console.log(plan);
     return new Promise((resolve, reject) => {
@@ -115,20 +101,6 @@ function dbfuncs() {
       }
     });
   };
-
-  // this.getPlan = (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const sql = "SELECT * FROM plan WHERE id = ?";
-  //       this.db.get(sql, [id], (err, data) => {
-  //         if (err) reject(err);
-  //         else resolve(data);
-  //       });
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // }
 
   this.getPlan = (userid) => {
     return new Promise((resolve, reject) => {
@@ -238,7 +210,6 @@ function dbfuncs() {
             })
             const courses = result.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.incomp, x.prep));
             studyPlan.courses = courses;
-            console.log(studyPlan)
             resolve(studyPlan);
           }
         })

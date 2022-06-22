@@ -4,10 +4,8 @@ import Program from './StudyPlan/Program';
 import Plan from './StudyPlan/Plan';
 
 
-
 function CusContent(props) {
   return (
-
     <Container className="app">
       <Row style={{ marginTop: '2rem' }}>
         <CourseList courses={props.courses} newPlan={props.newPlan} addCourse={props.addCourse} editMode={props.editMode}
@@ -22,7 +20,6 @@ function CusContent(props) {
           <Program initPlan={props.initPlan} postPlanHandler={props.postPlanHandler}></Program>}
       </Row> : ""}
     </Container>
-
   );
 }
 

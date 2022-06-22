@@ -3,7 +3,6 @@ const dbFuncs = require("../DAL/dbFuncs");
 
 function postRegistryBAL(registry) {
   return new Promise((resolve, reject) => {
-    console.log(registry);
     try {
       const db = new dbFuncs();
       db.postRegistry(registry)

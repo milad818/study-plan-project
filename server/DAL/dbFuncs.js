@@ -74,7 +74,6 @@ function dbfuncs() {
   }
 
   this.postPlan = (plan) => {
-    console.log(plan);
     return new Promise((resolve, reject) => {
       try {
         const sql = "INSERT INTO plan (minCredit, maxCredit, type, userID) VALUES (?, ?, ?, ?)";

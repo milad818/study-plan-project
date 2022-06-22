@@ -2,9 +2,8 @@
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container, Row, Alert } from 'react-bootstrap';
-import fakeCourses from './dao';
 import CusNavBar from './Components/CusNavBar';
 import CusContent from './Components/MainPage';
 import DefaultRoute from './DefaultRoute';
@@ -32,15 +31,11 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
   const [userplan, setUserplan] = useState([]);
-  const [addState, setAddState] = useState();
 
 
   function getAllCourseList() {
     fetch("http://localhost:3001/api/courses").then(res => res.json()).then(data => {
       Courses = data.map(x => new Course(x.code, x.name, x.credit, x.maxstudent, x.enroll, x.incompatible, x.prepcourse));
-      // for(let i of Courses) {
-      //   if(i.maxStudents === 0) i.maxStudents = "-";
-      // }
       let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
 
       coursesChangedInUseEffect = false;
@@ -57,7 +52,6 @@ function App() {
     for (let course of courseList) {
       const validation = courseValidation(plan, newPlan, course, type)
       course.validation = validation;
-      // console.log(validation)
     }
     coursesChangedInUseEffect = false;
     setCourseList([...courseList]);

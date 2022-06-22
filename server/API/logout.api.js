@@ -1,4 +1,3 @@
-'use strict';
 
 
 function logoutAPI (app) {

@@ -1,4 +1,4 @@
-# Exam #1: "Study Plan"
+# Exam #1: "StudyPlan"
 ## Student: s300708 ZAKHIREH MILAD 
 
 ## React Client Application Routes
@@ -26,7 +26,7 @@
 
 - POST `/api/courses`
 - 
-  - request parameters: id, minCredit, maxCredit, type, userID, courses
+  - request parameters: _NONE_
   - request body content:
 ```
 {
@@ -105,7 +105,8 @@
   - response body content:
 ```
 {
-  "user":{
+  "user":
+  {
     "id":2,
     "username":"joeyscientist@polito.com",
     "name":"Joey"

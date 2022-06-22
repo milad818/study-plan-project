@@ -7,10 +7,7 @@ function Plan(props) {
   
   function saveHandler() {
     props.onSave(props.newPlan, props.progType)
-    // props.setEditMode(false);
-    // console.log("in plan new plan", props.newPlan)
   }
-
 
 
   

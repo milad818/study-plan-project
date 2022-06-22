@@ -9,13 +9,6 @@ function CourseListRow(props) {
   function onClick(e) {
     e.stopPropagation();
     props.addCourse(props.course);
-    // props.addHandler(props.fakeCourses, props.newPlan);
-
-    // props.onSubmit({watchDate,isFavorite,filmName:name,rating});
-    // setDate(today);
-    // setIsFavorite(false);
-    // setName('');
-    // setRating(0);
   }
 
 

@@ -7,8 +7,8 @@ function DefaultRoute() {
     <>
       <Row>
         <Col>
-          <h1>Nothing here...</h1>
-          <p>This is not the route you are looking for!</p>
+          <h1>Not available!</h1>
+          <p>The content you are looking for is not available!</p>
         </Col>
       </Row>
     </>

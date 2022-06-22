@@ -13,6 +13,7 @@ import Course from './Components/Models/Course';
 import API from './API';
 
 let Courses = [];
+let coursesChangedInUseEffect = false;
 
 function App() {
 
@@ -41,8 +42,10 @@ function App() {
       //   if(i.maxStudents === 0) i.maxStudents = "-";
       // }
       let sortedCourses = Courses.sort((a, b) => (a.courseName > b.courseName) ? 1 : ((b.courseName > a.courseName) ? -1 : 0))
+
+      coursesChangedInUseEffect = false;
       setCourseList(sortedCourses);
-  
+
     });
   }
 
@@ -51,23 +54,45 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const checkAuth = async() => {
-    const userinfo = await API.getUserInfo();
-    if(userinfo !== false) {
-      setUser(userinfo);
-      setLoggedIn(true);
-      await getPlan();
+    for (let course of courseList) {
+      const validation = courseValidation(plan, newPlan, course, type)
+      course.validation = validation;
+      // console.log(validation)
     }
+    coursesChangedInUseEffect = false;
+    setCourseList([...courseList]);
+  }, [newPlan])
+
+  useEffect(() => {
+    for (let course of courseList) {
+      const validation = courseValidation(plan, newPlan, course, type)
+      course.validation = validation;
+    }
+    if (!coursesChangedInUseEffect) {
+      coursesChangedInUseEffect = true;
+      setCourseList([...courseList]);
+    }
+  }, [courseList])
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const userinfo = await API.getUserInfo();
+      if (userinfo !== false) {
+        setUser(userinfo);
+        setLoggedIn(true);
+        await getPlan();
+      }
     }
     checkAuth();
   }, []);
-  
+
   useEffect(() => {
-    if(message) {
+    if (message) {
       setTimeout(() => {
         setMessage(false);
-      }, 5000) }
-    }, [message])
+      }, 5000)
+    }
+  }, [message])
 
   /******  VALIDATION ******/
 
@@ -122,21 +147,21 @@ function App() {
       for (let j in np)
         if (c.incomps[i] === np[j].code)
           return false;
-      }
+    }
     return true;
   }
 
   const checkFreeSeat = (course) => {
 
-    if(course.maxStudents !== 0 && course.enrolledStudents >= course.maxStudents)
+    if (course.maxStudents !== 0 && course.enrolledStudents >= course.maxStudents)
       return false;
     else return true;
   }
 
   const checkPrepAdded = (course, studyPlanCourseList) => {
-    if(!course.preps) return true;
+    if (!course.preps) return true;
     const alreadyAddedPreps = course.preps.filter(x => studyPlanCourseList.find(y => y.code.trim() === x.trim()))
-    if(alreadyAddedPreps.length === course.preps.length) {
+    if (alreadyAddedPreps.length === course.preps.length) {
       return true;
     }
     return false;
@@ -144,9 +169,9 @@ function App() {
 
   const checkPrep = (courseCode, studyPlanCourseList) => {
     const course = studyPlanCourseList.find(x => x.code === courseCode);
-    if(!course) return true;
+    if (!course) return true;
     const existingPrep = studyPlanCourseList.filter(x => x.preps.find(y => y.trim() === courseCode.trim()))
-    if(!existingPrep.length) {
+    if (!existingPrep.length) {
       return true;
     }
     return false;
@@ -155,33 +180,30 @@ function App() {
   const courseValidation = (plan, newPlan, course, type) => {
     const valPlan = [...plan];
     const valNewPlan = [...newPlan]
-    if (!checkValidCredit(valPlan, type)) {    
-      setMessage({msg:'The number of credits exceeds the maximum!', type:'danger'});
-      return false;
+    
+    if (!loggedIn) return;
+    
+    if (!checkFreeSeat(course)) {
+      return { result: false, message: { msg: 'The course has reached its maximum and is no longer available!', type: 'danger' } };
+    }
+    if (!checkValidCredit(valPlan, type)) {
+      return { result: false, message: { msg: 'The number of credits exceeds the maximum!', type: 'danger' } };
     }
     if (!checkSameCode(course, valNewPlan)) {
-      setMessage({msg:'The course has already been selected!', type:'danger'});
-      return false;
+      return { result: false, message: { msg: 'The course has already been selected!', type: 'danger' } };
     }
     if (!checkComp(course, valNewPlan)) {
-      setMessage({msg:`You cannot select "${course.courseName}" because it is incompatible with another course!`, type:'danger'});
-      return false;
+      return { result: false, message: { msg: `You cannot select "${course.courseName}" because it is incompatible with another course!`, type: 'danger' } };
     }
     if (!checkPrepAdded(course, newPlan)) {
-      // console.log(checkPrepAdded(course, valNewPlan));
-      setMessage({msg:'Please add the preparatory course first!', type:'danger'});
-      return false;
+      return { result: false, message: { msg: 'Please add the preparatory course first!', type: 'danger' } };
     }
-    if(!checkFreeSeat(course)) {
-      setMessage({msg:'The course has reached its maximum and is no longer available!', type:'danger'});
-      return false;
-    }
-    return true;
+    return { result: true };
   }
 
 
   const deleteCourse = async (courseCode) => {
-    if(checkPrep(courseCode, newPlan)) {
+    if (checkPrep(courseCode, newPlan)) {
       const np = newPlan.filter(cor => cor.code !== courseCode);
       setNewPlan(() => np);
       let i = 0;
@@ -195,22 +217,27 @@ function App() {
       courseToDelete.enrolledStudents = newEnrolledStudents;
 
     } else {
-      setMessage({msg:'You cannot remove the preparatory course first!', type:'danger'});
+      setMessage({ msg: 'You cannot remove the preparatory course first!', type: 'danger' });
       return;
     }
   }
 
-  const addCourse = async (course,studyPlanCourses) => {
+  const addCourse = async (course, studyPlanCourses) => {
     const plan = [...newPlan, course];
     let i = 0;
     let c = 0;
     for (i in plan) {
       c += plan[i].credits;
     };
-    if(courseValidation(plan, newPlan, course, type)) {
+
+    const validationRes = courseValidation(plan, newPlan, course, type);
+    if (validationRes.result) {
       setNewPlan(plan);
     }
-      else return;
+    else {
+      setMessage(validationRes.message)
+      return;
+    }
     setNewSelectedCredits(c);
     await getAllCourseList();
   }
@@ -234,7 +261,7 @@ function App() {
       await getAllCourseList();
       await getPlan();
     } else {
-      setMessage({msg:'The number of selected credits does not meet the contraint!', type:'danger'});
+      setMessage({ msg: 'The number of selected credits does not meet the contraint!', type: 'danger' });
       return;
     }
     setSelectedCredits(newSelectedCredits);
@@ -250,43 +277,57 @@ function App() {
     setNewSelectedCredits(c);
   }
 
-  const handleLogin = async (credentials) => {
-    try {
-      const user = await API.logIn(credentials);
-      await getPlan();  
-      setLoggedIn(true);
-      setMessage({msg: `Welcome, ${user.name}!`, type: 'success'})
-      setUser(user);
-      return true;
-    } catch(err) {
-      setMessage({msg: (err), type: 'danger'});
-      return false;
-    }
-  };
-
+  
   const removePlanHandler = async () => {
-    try{
+    try {
       await removeStudyPlan(fetchedPlan.id);
       await setNewPlan([]);
       await setPlan([]);
       await getAllCourseList();
       await getPlan();
       setNewSelectedCredits();
-    } catch(err) {
-      setMessage({msg: 'Unable to remove the plan!', type: 'danger'});
+    } catch (err) {
+      setMessage({ msg: 'Unable to remove the plan!', type: 'danger' });
       return false;
     }
   };
 
   const postPlanHandler = async (type) => {
-    try{
+    try {
       await postPlan(type);
       await getPlan();
-    } catch(err) {
-      setMessage({msg: (err) , type: 'danger'});
+    } catch (err) {
+      setMessage({ msg: (err), type: 'danger' });
     }
   }
-  
+
+/*** API Calls ***/
+
+const handleLogin = async (credentials) => {
+  try {
+    const user = await API.logIn(credentials);
+    await getPlan();
+    setLoggedIn(true);
+    setMessage({ msg: `Welcome, ${user.name}!`, type: 'success' })
+    setUser(user);
+    return true;
+  } catch (err) {
+    setMessage({ msg: (err), type: 'danger' });
+    return false;
+  }
+};
+
+const handleLogout = async () => {
+  await API.logOutAPI();
+  setLoggedIn(false);
+
+  setPlan([]);
+  setNewPlan([]);
+  setFetchedPlan([]);
+  setMessage('');
+  setEditMode(false);
+};
+
   const getPlan = async () => {
     try {
       const plan = await API.getStudyPlanAPI();
@@ -303,9 +344,9 @@ function App() {
           c += plan.courses[i].credits;
         };
         setNewSelectedCredits(c);
-      } 
-    } catch(err) {
-      setMessage({msg: `NOTICE! You have not set a study plan yet, choose a program type to start!`, type: 'danger'});
+      }
+    } catch (err) {
+      setMessage({ msg: `NOTICE! You have not set a study plan yet, choose a program type to start!`, type: 'danger' });
     }
   };
 
@@ -314,61 +355,51 @@ function App() {
       await API.removeStudyPlanAPI(planid);
       await getPlan();
       setCreatePlan(false);
-    } catch(err) {
-      setMessage({msg: "Cannot remove the plan!" , type: 'danger'});
+    } catch (err) {
+      setMessage({ msg: "Cannot remove the plan!", type: 'danger' });
     };
   };
 
   const postPlan = async (type) => {
     try {
       await API.postPlanAPI(type);
-    } catch(err) {
-      setMessage({msg: (err) , type: 'danger'});
+    } catch (err) {
+      setMessage({ msg: (err), type: 'danger' });
     }
   }
 
   const postCourses = async (courses) => {
     try {
       await API.postCoursesAPI(courses);
-    } catch(err) {
-      setMessage({msg: (err) , type: 'danger'});
+    } catch (err) {
+      setMessage({ msg: (err), type: 'danger' });
     }
   }
 
-  
-  const handleLogout = async () => {
-    await API.logOutAPI();
-    setLoggedIn(false);
 
-    setPlan([]);
-    setNewPlan([]);
-    setFetchedPlan([]);
-    setMessage('');
-  };
-    
-    
-    return (
-      <Container>
+
+  return (
+    <Container>
 
       <Router>
         <Row className='nav-bar'>
           <CusNavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} setMessage={setMessage} handleLogout={handleLogout} />
         </Row>
-        {message && <Row><div className="fixed-alert"><Alert  variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert></div></Row>}
+        {message && <Row><div className="fixed-alert"><Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert></div></Row>}
         <Routes>
-          <Route path='/login' element={ <LoginForm login={handleLogin} /> } />
+          <Route path='/login' element={<LoginForm login={handleLogin} />} />
           <Route path='/my-portal'
-            element={ <CusContent userplan={userplan} courses={courseList} plan={plan} newPlan={newPlan} editMode={editMode}
-            loggedIn={true} progType={type} validCredit={validCredit} newSelectedCredits={newSelectedCredits} addCourse={addCourse}
-            deleteCourse={deleteCourse} onEdit={onEdit} createPlan={createPlan} setEditMode={setEditMode} saveValid={saveValid} onSave={onSave}
-            cancelHandler={cancelHandler} initPlan={initPlan} removePlanHandler={removePlanHandler} postPlanHandler={postPlanHandler}  /> }>
+            element={<CusContent userplan={userplan} courses={courseList} plan={plan} newPlan={newPlan} editMode={editMode}
+              loggedIn={true} progType={type} validCredit={validCredit} newSelectedCredits={newSelectedCredits} addCourse={addCourse}
+              deleteCourse={deleteCourse} onEdit={onEdit} createPlan={createPlan} setEditMode={setEditMode} saveValid={saveValid} onSave={onSave}
+              cancelHandler={cancelHandler} initPlan={initPlan} removePlanHandler={removePlanHandler} postPlanHandler={postPlanHandler} />}>
           </Route>
           <Route path='/'
-            element={<CusContent courses={courseList} loggedIn={false} newPlan={newPlan} addCourse={addCourse} editMode={editMode} 
+            element={<CusContent courses={courseList} loggedIn={false} newPlan={newPlan} addCourse={addCourse} editMode={editMode}
               progType={type} deleteCourse={deleteCourse} newSelectedCredits={newSelectedCredits} onEdit={onEdit} createPlan={createPlan}
               setEditMode={setEditMode} saveValid={saveValid} onSave={onSave} cancelHandler={cancelHandler} initPlan={initPlan} validCredit={validCredit} />}>
           </Route>
-          <Route path='*' element={ <DefaultRoute/> } />
+          <Route path='*' element={<DefaultRoute />} />
         </Routes>
       </Router>
     </Container>

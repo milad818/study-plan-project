@@ -9,7 +9,6 @@ function postNewRegistryAPI(app) {
     if (courses !== undefined) {
       postNewRegistryBAL(courses, userid)
         .then(result => {
-          console.log("result",result);
           if(result) return res.status(201).send();
           else {
           return res.status(422).json("");

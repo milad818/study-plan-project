@@ -1,4 +1,3 @@
-import useCollapse from 'react-collapsed';
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import CourseListRow from './CourseListRow';
@@ -6,9 +5,6 @@ import CourseListRow from './CourseListRow';
 
 
 function CourseList(props) {
-  // const { getCollapseProps, getToggleProps, isExpanded } = useCollapse()
-  // const [isExpanded, setExpanded] = useState(false)
-  // const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded })
 
 
   return (

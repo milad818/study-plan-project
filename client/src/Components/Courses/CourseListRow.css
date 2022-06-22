@@ -33,3 +33,17 @@
   text-align: center;
   float: right;
 }
+
+.acc-validation {
+  background: red;
+  color: white;
+  padding: 5px;
+  height: 17px;
+  width: 17px;
+  display: inline-block;
+  text-align: center;
+  line-height: 9px;
+  border-radius: 50%;
+  font-size: 12px;
+  margin-right: 7px;
+}

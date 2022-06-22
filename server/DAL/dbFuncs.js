@@ -130,34 +130,6 @@ function dbfuncs() {
     });
   }
 
-  // this.deleteRegistry = (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const sql = "DELETE FROM enregistry WHERE id=?";
-  //       this.db.run(sql, [id], (err, row) => {
-  //         if (err) reject(err);
-  //         else resolve(row)
-  //       });
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // };
-
-  // this.deleteRegistry = (planid) => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const sql = "DELETE FROM enregistry WHERE planID=?";
-  //       this.db.run(sql, [planid], (err, data) => {
-  //         if (err) reject(err);
-  //         else resolve(data);
-  //       });
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // };
-
   this.getAllRegisteries = () => {
     return new Promise((resolve, reject) => {
       try {
@@ -172,19 +144,6 @@ function dbfuncs() {
     });
   }
 
-  // this.getCoursesByPlanid = (planid) => {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       const sql = "SELECT * FROM enregistry WHERE planID=?";
-  //       this.db.all(sql, [planid], (err, data) => {
-  //         if(err) reject(err);
-  //         else resolve(data);
-  //       })
-  //     } catch {
-  //       reject(error);
-  //     }
-  //   });
-  // }
 
   this.getRegistryInfo = (userid) => {
     return new Promise(async (resolve, reject) => {
@@ -194,11 +153,6 @@ function dbfuncs() {
           resolve(undefined);
         }
         const allRegistries = await this.getAllRegisteries();
-        // // // const sql = "SELECT * FROM enregistry JOIN course ON course.code=enregistry.courseCode WHERE planID=?";
-        // // const sqlPlan = "SELECT * FROM plan JOIN enregistry ON plan.id=enregistry.planID WHERE userID=?";
-        // // // const sql = "SELECT * FROM course JOIN enregistry ON course.code=enregistry.courseCode JOIN plan ON plan.id=enregistry.planID WHERE planID=?";
-        // // const sqlCourse = "SELECT * FROM enregistry JOIN course ON course.code=enregistry.courseCode WHERE userID=?";
-        // this.db.get(sqlPlan, [userid], (err, dataPlan) => {
         const sql = "SELECT * FROM course JOIN enregistry on course.code=enregistry.courseCode WHERE planID=?"
         this.db.all(sql, [studyPlan.id], (err, registrydata) => {
           if (err) reject(err);
@@ -213,8 +167,6 @@ function dbfuncs() {
             resolve(studyPlan);
           }
         })
-        // if (err) reject(err)
-        // });
       } catch (error) {
         reject(error);
       }

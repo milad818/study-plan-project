@@ -15,7 +15,6 @@ const db = new dbFuncs();
 // db.getAllRegisteries().then((x) => console.log(x));
 // db.getRegistryInfo(1).then((x) => console.log(x));
 
-
 const port = 3001;
 
 const app = new express();
@@ -97,7 +96,6 @@ logoutAPI(app);
 
 
 /*****************************************/
-
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`)

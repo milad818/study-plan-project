@@ -21,13 +21,12 @@ function postPlanAPI(app) {
         const mincredit = 40;
         const maxcredit = 60;
         const user = req.user.id;
-        // console.log("full user", user);
-         planToPost = new Plan(mincredit, maxcredit, body.type, user);
+        planToPost = new Plan(mincredit, maxcredit, body.type, user);
       } else if(body.type==="Part-Time") {
         const mincredit = 20;
         const maxcredit = 40;
         const user = req.user.id;
-         planToPost = new Plan(mincredit, maxcredit, body.type, user);
+        planToPost = new Plan(mincredit, maxcredit, body.type, user);
       } else{
         return res.status(404).send({msg: "Entry is not valid!"})
       }

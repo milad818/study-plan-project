@@ -36,7 +36,6 @@ function postNewRegistryBAL(courses, userid) {
       for(let fc of filteredPlanCourses) {
         if(fc.maxStudents !==0) {
           if(fc.enroll >= fc.maxStudents) {
-            console.log(fc.enroll >= fc.maxStudents);
             resolve(false);
             return;
           }

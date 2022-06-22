@@ -1,7 +1,7 @@
 import '../App.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 
 function LoginForm(props) {
   const [username, setUsername] = useState('');
@@ -26,7 +26,7 @@ function LoginForm(props) {
         <Form className='login-form' onSubmit={handleSubmit}>
           <Form.Group className='use' controlId='username'>
             <Form.Label className='label'>E-mail</Form.Label>
-            <Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} required={true} />
+            <Form.Control type='email' value={username} placeholder="youremail@polito.com" onChange={ev => setUsername(ev.target.value)} required={true} />
           </Form.Group>
 
           <Form.Group className='pass' controlId='password'>

@@ -23,16 +23,17 @@ function CourseListRow(props) {
 
     <Container fluid={'md'}>
       <Row>
-        <Col md="auto" >{props.editMode ? <Button className='button-add' variant='success' disabled={props.validCredit ? false : true} onClick={(e) => {onClick(e)}} >+</Button> : <FaBookOpen></FaBookOpen>}</Col>
+        <Col md="auto" >{props.editMode ? <Button className='button-add' variant='success' disabled={props.validCredit ? false : true} onClick={(e) => { onClick(e) }} >+</Button> : <FaBookOpen></FaBookOpen>}</Col>
         <Col><Accordion defaultActiveKey={['0']} alwaysOpen>
           <Accordion.Item eventKey="1">
             <Accordion.Header className='acc-header' >
-              &nbsp;&nbsp;&nbsp;
-              <div className='course-title' >Course: {props.course.courseName} </div> &nbsp;&nbsp;
-              <div className='course-description' > Code: {props.course.code} &nbsp;&nbsp;
-                    Credits: {props.course.credits} &nbsp;&nbsp;
-                    Enrolled Students: {props.course.enrolledStudents} &nbsp;&nbsp;
-                    Max. Students: {props.course.maxStudents===0 ? "-" : props.course.maxStudents}
+              <div className='acc-header'>
+                <div className='course-title' >{props.course.validation && !props.course.validation.result ?<div className='acc-validation'>!</div>:''}{props.course.courseName}</div>
+                <div className='course-description' > Code: {props.course.code} &nbsp;&nbsp;
+                  Credits: {props.course.credits} &nbsp;&nbsp;
+                  Enrolled Students: {props.course.enrolledStudents} &nbsp;&nbsp;
+                  Max. Students: {props.course.maxStudents === 0 ? "-" : props.course.maxStudents}
+                </div>
               </div>
             </Accordion.Header>
             <Accordion.Body>

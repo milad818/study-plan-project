@@ -12,57 +12,106 @@
 
 - POST `/api/plans`
 - 
-  - request parameters: type
+  - request parameters:
   - request body content:
+  ```
   {
-    "type": "Full-Time"
+    mincredit: 40,
+    maxcredit: 60,
+    type: 'Full-Time',
+    userid: 4
   }
+  ```
   - response body content: _NONE_
 
 - POST `/api/courses`
 - 
   - request parameters: id, minCredit, maxCredit, type, userID, courses
   - request body content:
-  ```
-  {
-    id: 57,
-    minCredit: 20,
-    maxCredit: 40,
-    type: 'Part-Time',
-    userID: 5,
-    courses: [
-      Course {
-        code: '01TXYOV',
-        courseName: 'Web Applications I ',
-        credits: 6,
-        maxStudents: 3,
-        incomps: [Array],
-        preps: []
-      },
-      Course {
-        code: '01TYDOV',
-        courseName: 'Software networking',
-        credits: 7,
-        maxStudents: 0,
-        incomps: [],
-        preps: []
-      },
-      Course {
-        code: '01UDUOV',
-        courseName: 'Sicurezza dei sistemi informativi ',
-        credits: 12,
-        maxStudents: 0,
-        incomps: [Array],
-        preps: []
-      }
-    ]
-  }
-  ```
+```
+{
+  courses: [
+    {
+      code: '01TYDOV',
+      courseName: 'Software networking',
+      credits: 7,
+      maxStudents: 0,
+      incomps: [],
+      preps: []
+    },
+    {
+      code: '01NYHOV',
+      courseName: 'System and device programming',
+      credits: 6,
+      maxStudents: 3,
+      incomps: [Array],
+      preps: []
+    },
+    {
+      code: '03UEWOV',
+      courseName: 'Challenge',
+      credits: 5,
+      maxStudents: 0,
+      incomps: [],
+      preps: []
+    },
+    {
+      code: '01OTWOV',
+      courseName: 'Computer network technologies and services',
+      credits: 6,
+      maxStudents: 3,
+      incomps: [Array],
+      preps: []
+    },
+    {
+      code: '01URSPD',
+      courseName: 'Internet Video Streaming',
+      credits: 6,
+      maxStudents: 2,
+      incomps: [],
+      preps: []
+    },
+    {
+      code: '02GOLOV',
+      courseName: 'Architetture dei sistemi di elaborazione',
+      credits: 12,
+      maxStudents: 0,
+      incomps: [Array],
+      preps: []
+    },
+    {
+      code: '01UDUOV',
+      courseName: 'Sicurezza dei sistemi informativi',
+      credits: 12,
+      maxStudents: 0,
+      incomps: [Array],
+      preps: []
+    },
+    {
+      code: '05BIDOV',
+      courseName: 'Ingegneria del software',
+      credits: 6,
+      maxStudents: 0,
+      incomps: [Array],
+      preps: [Array]
+    }
+  ]
+}
+```
   - response body content: _NONE_
 
 - GET `/api/sessions/current`
-  - request parameters:
+  - request parameters: _NONE_
   - response body content:
+```
+{
+  "user":{
+    "id":2,
+    "username":"joeyscientist@polito.com",
+    "name":"Joey"
+  }
+}
+```
 
 - GET `/api/courses`
   - request parameters: _NONE_
@@ -71,7 +120,7 @@
   [
     {
       code: '02GOLOV',
-      name: 'Architetture dei sistemi di elaborazione ',
+      name: 'Architetture dei sistemi di elaborazione',
       credit: 12,
       maxstudent: 0,
       incompatible: [ '02LSEOV' ],        
@@ -80,7 +129,7 @@
     },
     {
       code: '02LSEOV',
-      name: 'Computer architectures  ',   
+      name: 'Computer architectures ',   
       credit: 12,
       maxstudent: 0,
       incompatible: [ '02GOLOV' ],        
@@ -89,7 +138,7 @@
     },
     {
       code: '01SQJOV',
-      name: 'Data Science and Database Technology ',
+      name: 'Data Science and Database Technology',
       credit: 8,
       maxstudent: 0,
       incompatible: [ '01SQMOV', '01SQLOV' ],
@@ -98,7 +147,7 @@
     },
     {
       code: '01SQMOV',
-      name: 'Data Science e Tecnologie per le Basi di Dati ',
+      name: 'Data Science e Tecnologie per le Basi di Dati',
       credit: 8,
       maxstudent: 0,
       incompatible: [ '01SQJOV', '01SQLOV' ],
@@ -121,7 +170,7 @@
   ```
 
 - DELETE `/api/plandata/:id`
-  - request parameters: planid
+  - request parameters: 5
   - response body content: _NONE_
 
 

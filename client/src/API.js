@@ -13,8 +13,8 @@ const logIn = async (credentials) => {
     credentials: 'include',
     body: JSON.stringify(credentials),
   });
+  const user = await response.json();
   if(response.ok) {
-    const user = await response.json();
     return user;
   }
   else {

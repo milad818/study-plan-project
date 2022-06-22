@@ -1,4 +1,4 @@
-import { Container, Row, Button } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import CourseList from './Courses/CourseList';
 import Program from './StudyPlan/Program';
 import Plan from './StudyPlan/Plan';
@@ -9,10 +9,9 @@ function CusContent(props) {
   return (
 
     <Container className="app">
-
       <Row style={{ marginTop: '2rem' }}>
         <CourseList courses={props.courses} newPlan={props.newPlan} addCourse={props.addCourse} editMode={props.editMode}
-          validCredit={props.validCredit} ></CourseList>
+          validCredit={props.validCredit} loggedIn={props.loggedIn} ></CourseList>
       </Row>
       {props.loggedIn ? 
       <Row>

@@ -1,5 +1,5 @@
-# Exam #1: "StudyPlan"
-## Student: s300708 ZAKHIREH MILAD 
+# Project Name: "StudyPlan"
+## Developed by: ZAKHIREH Milad 
 
 ## React Client Application Routes
 
